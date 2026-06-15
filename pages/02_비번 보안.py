@@ -4,14 +4,14 @@ import streamlit as st
 # STATE INIT
 # =========================
 if "page" not in st.session_state:
-    st.session_state.page = "page3"
+    st.session_state.page = "main"
 
-def go(page_name):
-    st.session_state.page = page_name
+def go(page):
+    st.session_state.page = page
     st.rerun()
 
 # =========================
-# GLOBAL STYLE (GLASS UI)
+# GLOBAL UI STYLE (GLASS NAV)
 # =========================
 st.markdown("""
 <style>
@@ -38,28 +38,22 @@ st.markdown("""
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-/* TITLE */
 .nav-title {
     font-size: 15px;
     font-weight: 600;
 }
 
-/* BUTTON */
-.stButton > button {
+/* BUTTONS */
+.nav-btn {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.12);
     color: white;
     padding: 8px 14px;
     border-radius: 12px;
-    transition: 0.2s;
+    margin-left: 8px;
+    cursor: pointer;
 }
 
-.stButton > button:hover {
-    transform: translateY(-2px);
-    background: rgba(99,102,241,0.25);
-}
-
-/* CARD */
 .card {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.12);
@@ -72,91 +66,98 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================
-# NAVBAR
+# NAVIGATION BAR
 # =========================
 st.markdown("""
 <div class="navbar">
-    <div class="nav-title">🔐 Password Security Lab</div>
+    <div class="nav-title">🔐 Entropy Security Lab</div>
 </div>
 """, unsafe_allow_html=True)
 
-# =========================
-# NAV BUTTONS (핵심)
-# =========================
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    if st.button("🏠 Main"):
+    if st.button("🏠 Home"):
         go("main")
 
 with col2:
-    if st.button("📊 Page 01"):
+    if st.button("📊 Analysis"):
         go("page1")
 
 with col3:
-    if st.button("⚙ Page 02"):
+    if st.button("⚙ Model"):
         go("page2")
 
 with col4:
-    if st.button("🔐 Page 03"):
+    if st.button("🔐 Security"):
         go("page3")
 
 st.divider()
 
 # =========================
-# PAGE 3 CONTENT (유지)
+# PAGES
 # =========================
-if st.session_state.page == "page3":
 
+# -------------------------
+# MAIN PAGE
+# -------------------------
+if st.session_state.page == "main":
+    st.title("🔬 인간 비밀번호 선택과 정보보안")
+
+    st.markdown("""
+    <div class="card">
+    이 프로젝트는 인간의 비밀번호 선택이
+    통계물리학적 엔트로피 관점에서 어떻게 해석되는지 분석한다.
+    </div>
+    """, unsafe_allow_html=True)
+
+# -------------------------
+# PAGE 1
+# -------------------------
+elif st.session_state.page == "page1":
+    st.title("📊 비밀번호 패턴 분석")
+
+    data = {
+        "123456": "매우 위험 (상위 사용 패턴)",
+        "abc123": "위험",
+        "qwerty123": "중간",
+        "X7!kP2#z": "안전"
+    }
+
+    for k, v in data.items():
+        st.markdown(f"""
+        <div class="card">
+        <b>{k}</b><br>{v}
+        </div>
+        """, unsafe_allow_html=True)
+
+# -------------------------
+# PAGE 2 (PHYSICS → MODEL)
+# -------------------------
+elif st.session_state.page == "page2":
+    st.title("⚙ 통계물리 모델")
+
+    st.markdown("""
+    <div class="card">
+    엔트로피는 가능한 상태 수와 로그적으로 비례한다.<br><br>
+    인간의 선택은 균등 분포가 아닌 편향된 분포를 가진다.<br><br>
+    → 상태 공간이 축소된다.
+    </div>
+    """, unsafe_allow_html=True)
+
+# -------------------------
+# PAGE 3 (SECURITY)
+# -------------------------
+elif st.session_state.page == "page3":
     st.title("🔐 정보보안 해석")
 
     st.markdown("""
     <div class="card">
-    <h3>3. Security Layer (정보보안)</h3>
+    공격자는 무작위 탐색이 아니라<br>
+    인간의 패턴을 이용한 확률 기반 탐색을 수행한다.<br><br>
 
-    <b>공격 모델</b><br>
     → Dictionary Attack<br>
     → Pattern Exploitation<br>
-    → Brute Force
-
-    <br><br>
-
-    인간의 비밀번호 선택은 무작위가 아니라<br>
-    <b>확률적으로 편향된 탐색 공간</b>을 만든다.
-
-    <br><br>
-
-    → 결과적으로 공격자는 전체 공간이 아니라<br>
-    “고확률 영역만 탐색”하게 된다.
-    </div>
-    """, unsafe_allow_html=True)
-
-# =========================
-# ROUTING (다른 페이지 연결)
-# =========================
-elif st.session_state.page == "main":
-    st.title("🏠 Main Page")
-
-    st.markdown("""
-    <div class="card">
-    메인 페이지로 이동됨
-    </div>
-    """, unsafe_allow_html=True)
-
-elif st.session_state.page == "page1":
-    st.title("📊 Page 01")
-
-    st.markdown("""
-    <div class="card">
-    비밀번호 패턴 분석 페이지
-    </div>
-    """, unsafe_allow_html=True)
-
-elif st.session_state.page == "page2":
-    st.title("⚙ Page 02")
-
-    st.markdown("""
-    <div class="card">
-    통계물리 (Entropy Model) 페이지
+    → Reduced Search Space
     </div>
     """, unsafe_allow_html=True)
