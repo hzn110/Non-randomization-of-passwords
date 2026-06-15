@@ -1,194 +1,176 @@
 import streamlit as st
 import math
-import random
-import time
 
 # =========================
-# PAGE CONFIG
+# CONFIG
 # =========================
 st.set_page_config(
-    page_title="정보보안 결론",
-    page_icon="🔐",
+    page_title="Entropy → Security",
     layout="wide"
 )
 
 # =========================
-# APPLE LIQUID GLASS UI
+# MODERN GLASS UI
 # =========================
 st.markdown("""
 <style>
-/* 배경 */
 .stApp {
-    background: radial-gradient(circle at top, #0f172a, #020617);
+    background: radial-gradient(circle at top, #0b1220, #020617);
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* 글래스 카드 */
-.glass {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(16px);
+/* glass card */
+.card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    backdrop-filter: blur(18px);
     border-radius: 20px;
     padding: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    margin-bottom: 15px;
 }
 
-/* 버튼 */
-.stButton > button {
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white;
-    border-radius: 12px;
-    padding: 0.6rem 1rem;
-    border: none;
-    transition: 0.2s;
-}
-.stButton > button:hover {
-    transform: scale(1.03);
+/* highlight flow */
+.flow {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-/* 텍스트 */
-h1, h2, h3 {
-    color: white;
+.badge {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(99,102,241,0.2);
+    border: 1px solid rgba(99,102,241,0.4);
+    font-size: 13px;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
 # TITLE
 # =========================
-st.title("🔐 인간의 비밀번호 선택과 정보보안")
+st.title("🔁 Entropy Flow: Physics → Security")
 
 st.markdown("""
-<div class="glass">
-<h3>탐구 목표</h3>
-인간의 비밀번호 선택 패턴이 정보보안에 미치는 영향을
-<strong>통계물리학적 엔트로피 관점</strong>에서 분석한다.
+<div class="card">
+<strong>핵심 질문</strong><br><br>
+왜 ‘물리에서의 엔트로피’ 개념이 ‘정보보안 취약성’과 연결되는가?
 </div>
 """, unsafe_allow_html=True)
 
-st.divider()
+# =========================
+# 1. PHYSICS LAYER
+# =========================
+st.markdown("""
+<div class="card">
+<h3>1. Physics Layer (통계물리)</h3>
+
+<div class="flow">
+<span class="badge">Microstate</span>
+<span class="badge">Entropy</span>
+<span class="badge">Probability Distribution</span>
+</div>
+
+<br>
+
+시스템은 가능한 상태가 많을수록 엔트로피가 증가한다.<br>
+하지만 인간 선택은 균등 분포가 아니라 <b>편향된 분포</b>를 가진다.
+</div>
+""", unsafe_allow_html=True)
 
 # =========================
-# 분석 1: 엔트로피 계산
+# 2. HUMAN BEHAVIOR
 # =========================
-def entropy(password):
-    pool = 0
-    if any(c.islower() for c in password): pool += 26
-    if any(c.isupper() for c in password): pool += 26
-    if any(c.isdigit() for c in password): pool += 10
-    if any(not c.isalnum() for c in password): pool += 10
-    
-    if pool == 0:
-        return 0
-    
-    return len(password) * math.log2(pool)
+st.markdown("""
+<div class="card">
+<h3>2. Human Behavior Layer</h3>
 
-def crack_time(entropy_value):
-    # 매우 단순한 모델 (초 단위)
-    guesses = 2 ** entropy_value
-    speed = 1e9  # 10억/초 가정
-    seconds = guesses / speed
-    
-    if seconds < 1:
-        return "즉시"
-    elif seconds < 3600:
-        return "몇 초 ~ 몇 시간"
-    elif seconds < 86400:
-        return "수일"
-    elif seconds < 31536000:
-        return "수년"
-    else:
-        return "수십 년 이상"
+<div class="flow">
+<span class="badge">Memory Bias</span>
+<span class="badge">Keyboard Patterns</span>
+<span class="badge">Shortcuts</span>
+</div>
 
-st.markdown('<div class="glass">', unsafe_allow_html=True)
-st.subheader("📊 비밀번호 강도 측정기")
+<br>
+
+인간은 랜덤을 생성하지 않는다.<br>
+대신 “기억하기 쉬운 상태”를 선택한다.<br><br>
+
+→ 결과: 상태 공간이 급격히 축소됨 (Entropy 감소)
+</div>
+""", unsafe_allow_html=True)
+
+# =========================
+# 3. SECURITY LAYER
+# =========================
+st.markdown("""
+<div class="card">
+<h3>3. Security Layer (정보보안)</h3>
+
+<div class="flow">
+<span class="badge">Dictionary Attack</span>
+<span class="badge">Pattern Exploitation</span>
+<span class="badge">Brute Force</span>
+</div>
+
+<br>
+
+공격자는 인간의 편향을 이용해 탐색 공간을 줄인다.<br>
+즉, 실제 공격은 “무작위”가 아니라 “확률 기반 탐색”이다.
+</div>
+""", unsafe_allow_html=True)
+
+# =========================
+# 4. INTERACTIVE MINI SIM
+# =========================
+st.markdown("### ⚡ 패턴 위험 시각화")
 
 pw = st.text_input("비밀번호 입력")
 
+def score(pw):
+    s = 0
+    if pw.lower() in ["123456","qwerty","password"]:
+        s += 90
+    if pw.isdigit():
+        s += 60
+    if len(pw) < 8:
+        s += 30
+    return min(s, 100)
+
 if pw:
-    e = entropy(pw)
-    t = crack_time(e)
+    risk = score(pw)
 
-    st.metric("엔트로피", f"{e:.2f} bits")
-    st.metric("예상 크래킹 시간", t)
+    st.progress(risk / 100)
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.divider()
-
-# =========================
-# 분석 2: 실제 패턴 비교
-# =========================
-st.markdown('<div class="glass">', unsafe_allow_html=True)
-st.subheader("📉 인간 비밀번호 패턴 분석")
-
-data = {
-    "123456": "상위 0.1% 사용 패턴 / 매우 위험",
-    "abc123": "상위 1% 패턴 / 위험",
-    "qwerty123": "상위 5% 패턴 / 보통 위험",
-    "X7!kP2#z": "하위 1% 패턴 / 안전"
-}
-
-for k, v in data.items():
-    st.write(f"**{k}** → {v}")
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.divider()
+    if risk < 30:
+        st.success("Low Risk (상대적으로 안전)")
+    elif risk < 70:
+        st.warning("Medium Risk (패턴 가능성 존재)")
+    else:
+        st.error("High Risk (공격 대상 가능성 높음)")
 
 # =========================
-# 분석 3: 브루트포스 시뮬
-# =========================
-st.markdown('<div class="glass">', unsafe_allow_html=True)
-st.subheader("💥 브루트포스 시뮬레이터")
-
-if st.button("시뮬레이션 실행"):
-    examples = {
-        "123456": 0.01,
-        "abc123": 0.05,
-        "qwerty123": 2,
-        "X7!kP2#z": 25
-    }
-
-    for k, v in examples.items():
-        st.write(f"🔑 {k}")
-        bar = st.progress(0)
-
-        for i in range(100):
-            time.sleep(0.005)
-            bar.progress(i + 1)
-
-        st.write(f"→ {v}초 / 수년~수십년 차이 발생")
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.divider()
-
-# =========================
-# 결론
+# 5. FINAL BRIDGE (핵심 페이지)
 # =========================
 st.markdown("""
-<div class="glass">
-<h2>🧠 정보보안 결론</h2>
+<div class="card">
+<h2>🔗 Physics → Security 연결</h2>
 
-<ul>
-<li>인간은 랜덤하지 않다</li>
-<li>기억하기 쉬운 패턴에 집중한다</li>
-<li>이로 인해 엔트로피가 낮아진다</li>
-<li>공격자는 이를 이용해 사전 공격을 수행한다</li>
-</ul>
+<div class="flow">
+<span class="badge">Entropy 감소</span>
+<span class="badge">State Bias</span>
+<span class="badge">Predictability 증가</span>
+<span class="badge">Attack Success ↑</span>
+</div>
 
-<hr>
+<br>
 
-<h3>📌 최종 결론</h3>
-통계물리학적으로 인간의 비밀번호 선택은 높은 엔트로피 상태가 아니라<br>
-특정 패턴에 집중된 낮은 엔트로피 상태이다.<br><br>
+물리 시스템에서의 엔트로피 감소는 단순한 열역학 개념이 아니라,<br>
+정보 시스템에서는 “예측 가능성 증가”로 변환된다.<br><br>
 
-이는 정보보안 측면에서 예측 가능성을 증가시키며,<br>
-결과적으로 비밀번호 크래킹 성공률을 높인다.<br><br>
-
-따라서 안전한 비밀번호 설계를 위해서는<br>
-<strong>인간의 직관을 거스르는 비직관적 구조</strong>가 필요하다.
+즉, 인간의 선택은 물리적으로는 구조화된 상태이며<br>
+정보보안에서는 취약성으로 해석된다.
 </div>
 """, unsafe_allow_html=True)
