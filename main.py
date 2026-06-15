@@ -302,7 +302,7 @@ for col, info in zip(cols, pages_info):
         </div>
         """, unsafe_allow_html=True)
 
-        st.page_link(info["path"], label=info["label"], icon="➜")
+        st.page_link(info["path"], label=info["label"], icon="➡️")
 
 # ======================
 # 핵심 연구 질문
