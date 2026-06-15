@@ -1,3 +1,6 @@
+import os
+import re
+
 import streamlit as st
 
 st.set_page_config(
@@ -166,28 +169,41 @@ section[data-testid="stSidebar"]{
     color:transparent;
 }
 
-/* 페이지 이동 버튼(page_link) 글라스화 */
-div[data-testid="stPageLink"]{
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.14);
-    border-radius:18px;
-    backdrop-filter: blur(18px);
+/* 카드 전체를 클릭 가능한 배너로 만드는 링크 스타일 */
+a.glass-link{
+    text-decoration:none !important;
+    color:inherit;
+    display:block;
+}
+
+a.glass-link .card-arrow{
+    margin-top:18px;
+    font-weight:600;
+    font-size:0.95rem;
+    color:rgba(255,255,255,0.55);
+    display:flex;
+    align-items:center;
+    gap:6px;
     transition: all 0.25s ease;
-    margin-top:14px;
 }
 
-div[data-testid="stPageLink"]:hover{
-    background:rgba(255,255,255,0.14);
-    border-color:rgba(255,255,255,0.3);
-}
-
-div[data-testid="stPageLink"] p{
-    color:rgba(255,255,255,0.9) !important;
-    font-weight:600 !important;
+a.glass-link:hover .card-arrow{
+    color:#ffffff;
+    transform: translateX(4px);
 }
 
 </style>
 """, unsafe_allow_html=True)
+
+# ======================
+# 페이지 경로 -> URL 슬러그 변환
+# ======================
+def page_slug(path: str) -> str:
+    filename = os.path.basename(path)
+    name, _ = os.path.splitext(filename)
+    name = re.sub(r"^[0-9]+_", "", name)   # 앞쪽 번호 접두사 제거 (예: 00_)
+    return name.replace(" ", "_")          # 공백 -> 언더스코어
+
 
 # ======================
 # Hero
@@ -294,15 +310,17 @@ cols = row1 + row2
 
 for col, info in zip(cols, pages_info):
     with col:
+        slug = page_slug(info["path"])
         st.markdown(f"""
+        <a class="glass-link" href="/{slug}" target="_self">
         <div class="glass">
         <div class="card-icon">{info['icon']}</div>
         <div class="card-title">{info['title']}</div>
         <div class="card-desc">{info['desc']}</div>
+        <div class="card-arrow">{info['label']} →</div>
         </div>
+        </a>
         """, unsafe_allow_html=True)
-
-        st.page_link(info["path"], label=info["label"], icon="➡️")
 
 # ======================
 # 핵심 연구 질문
