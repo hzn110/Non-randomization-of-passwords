@@ -1,18 +1,17 @@
 import streamlit as st
-import math
 
 # =========================
-# PAGE STATE
+# STATE INIT
 # =========================
 if "page" not in st.session_state:
-    st.session_state.page = "page2"  # 현재 페이지 (02)
+    st.session_state.page = "page3"
 
 def go(page_name):
     st.session_state.page = page_name
     st.rerun()
 
 # =========================
-# GLOBAL UI STYLE (GLASS DESIGN)
+# GLOBAL STYLE (GLASS UI)
 # =========================
 st.markdown("""
 <style>
@@ -45,7 +44,7 @@ st.markdown("""
     font-weight: 600;
 }
 
-/* BUTTON STYLE */
+/* BUTTON */
 .stButton > button {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.12);
@@ -82,7 +81,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =========================
-# NAV BUTTONS
+# NAV BUTTONS (핵심)
 # =========================
 col1, col2, col3, col4 = st.columns(4)
 
@@ -105,103 +104,59 @@ with col4:
 st.divider()
 
 # =========================
-# ENTROPY FUNCTION (CORE)
+# PAGE 3 CONTENT (유지)
 # =========================
-def entropy(pw):
-    pool = 0
-    if any(c.islower() for c in pw): pool += 26
-    if any(c.isupper() for c in pw): pool += 26
-    if any(c.isdigit() for c in pw): pool += 10
-    if any(not c.isalnum() for c in pw): pool += 10
-    return len(pw) * math.log2(pool) if pool else 0
+if st.session_state.page == "page3":
 
-def crack_time(H):
-    return 2**H / 1e9  # 10억 guesses/sec
-
-# =========================
-# ROUTER
-# =========================
-
-# -------------------------
-# MAIN PAGE
-# -------------------------
-if st.session_state.page == "main":
-    st.title("🔬 인간 비밀번호와 정보보안")
-
-    st.markdown("""
-    <div class="card">
-    이 프로젝트는 인간의 비밀번호 선택이<br>
-    통계물리학적 엔트로피 구조와 어떻게 연결되는지 분석한다.
-    </div>
-    """, unsafe_allow_html=True)
-
-# -------------------------
-# PAGE 1
-# -------------------------
-elif st.session_state.page == "page1":
-    st.title("📊 비밀번호 패턴 분석")
-
-    data = {
-        "123456": "매우 위험 (패턴 집중)",
-        "abc123": "위험",
-        "qwerty123": "중간 위험",
-        "X7!kP2#z": "고엔트로피 (안전)"
-    }
-
-    for k, v in data.items():
-        st.markdown(f"""
-        <div class="card">
-        <b>{k}</b><br>{v}
-        </div>
-        """, unsafe_allow_html=True)
-
-# -------------------------
-# PAGE 2 (CURRENT)
-# -------------------------
-elif st.session_state.page == "page2":
-    st.title("⚙ 비밀번호 보안 분석 (Entropy Model)")
-
-    st.markdown("""
-    <div class="card">
-    엔트로피는 가능한 상태 수와 로그적으로 증가한다.<br>
-    인간의 선택은 균등 분포가 아니라 편향된 분포를 가진다.
-    </div>
-    """, unsafe_allow_html=True)
-
-    pw = st.text_input("비밀번호 입력")
-
-    if pw:
-        H = entropy(pw)
-        T = crack_time(H)
-
-        st.metric("Entropy (bits)", round(H, 2))
-
-        if T < 1:
-            label = "즉시"
-        elif T < 3600:
-            label = "짧은 시간"
-        elif T < 86400:
-            label = "수일"
-        elif T < 31536000:
-            label = "수년"
-        else:
-            label = "수십 년 이상"
-
-        st.metric("Crack Time", label)
-
-# -------------------------
-# PAGE 3
-# -------------------------
-elif st.session_state.page == "page3":
     st.title("🔐 정보보안 해석")
 
     st.markdown("""
     <div class="card">
-    공격자는 무작위 탐색이 아니라<br>
-    인간의 패턴 기반 확률 탐색을 수행한다.<br><br>
+    <h3>3. Security Layer (정보보안)</h3>
 
+    <b>공격 모델</b><br>
     → Dictionary Attack<br>
     → Pattern Exploitation<br>
-    → Reduced Search Space
+    → Brute Force
+
+    <br><br>
+
+    인간의 비밀번호 선택은 무작위가 아니라<br>
+    <b>확률적으로 편향된 탐색 공간</b>을 만든다.
+
+    <br><br>
+
+    → 결과적으로 공격자는 전체 공간이 아니라<br>
+    “고확률 영역만 탐색”하게 된다.
+    </div>
+    """, unsafe_allow_html=True)
+
+# =========================
+# ROUTING (다른 페이지 연결)
+# =========================
+elif st.session_state.page == "main":
+    st.title("🏠 Main Page")
+
+    st.markdown("""
+    <div class="card">
+    메인 페이지로 이동됨
+    </div>
+    """, unsafe_allow_html=True)
+
+elif st.session_state.page == "page1":
+    st.title("📊 Page 01")
+
+    st.markdown("""
+    <div class="card">
+    비밀번호 패턴 분석 페이지
+    </div>
+    """, unsafe_allow_html=True)
+
+elif st.session_state.page == "page2":
+    st.title("⚙ Page 02")
+
+    st.markdown("""
+    <div class="card">
+    통계물리 (Entropy Model) 페이지
     </div>
     """, unsafe_allow_html=True)
