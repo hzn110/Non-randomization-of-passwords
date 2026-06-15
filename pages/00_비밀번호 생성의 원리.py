@@ -1,288 +1,152 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import numpy as np
+import plotly.express as px
 import re
 
-# =====================================================
-# 페이지 설정
-# =====================================================
+# ==================================================
+# PAGE CONFIG
+# ==================================================
 
 st.set_page_config(
-    page_title="인간은 어떻게 비밀번호를 만드는가?",
+    page_title="인간은 정말 랜덤한 비밀번호를 만들 수 있을까?",
     page_icon="🔐",
     layout="wide"
 )
 
-# =====================================================
-# 홈 버튼
-# =====================================================
-
-if st.button("🏠 메인 화면으로 이동"):
-    st.switch_page("Home.py")
-
-# =====================================================
-# 데이터 불러오기
-# =====================================================
+# ==================================================
+# DATA
+# ==================================================
 
 @st.cache_data
 def load_data():
-    return pd.read_csv("rockyou_rigorous_behavioral_physics_v2 (1).csv")
+    return pd.read_csv(
+        "rockyou_rigorous_behavioral_physics_v2 (1).csv"
+    )
 
 df = load_data()
 
-# =====================================================
-# 사이드바
-# =====================================================
+AVG_BIAS = 0.159
+AVG_ENTROPY = 2.678
+AVG_ORDER = 0.716
+
+# ==================================================
+# SIDEBAR
+# ==================================================
 
 with st.sidebar:
 
-    st.title("📚 통계역학 용어 사전")
+    st.title("📚 용어 사전")
 
-    with st.expander("미시상태 (Microstate)"):
+    with st.expander("엔트로피(Entropy)"):
+
         st.write("""
-        통계역학에서 시스템을 구성하는 개별 상태를 의미한다.
+        무작위성의 정도를 의미한다.
 
-        본 연구에서는 비밀번호 하나를
-        하나의 미시상태로 본다.
+        높을수록 예측하기 어렵다.
         """)
 
-    with st.expander("거시상태 (Macrostate)"):
+    with st.expander("질서변수(Order Parameter)"):
+
         st.write("""
-        서로 다른 비밀번호라도
+        집단이 특정 상태에 얼마나 집중되는지를 나타낸다.
 
-        같은 구조를 가지면
+        0에 가까우면 무질서
 
-        같은 거시상태(Macrostate)로 분류한다.
+        1에 가까우면 질서 상태
         """)
 
-    with st.expander("질서변수 (Order Parameter)"):
+    with st.expander("자기조직화(Self-Organization)"):
+
         st.write("""
-        특정 문자 종류에 얼마나 집중되어 있는지를 나타낸다.
+        누가 규칙을 만든 것이 아닌데도
+
+        집단 전체에서 질서가 나타나는 현상
         """)
 
-    with st.expander("자기조직화 (Self-Organization)"):
-        st.write("""
-        개별 행동은 무작위처럼 보이지만
+# ==================================================
+# TITLE
+# ==================================================
 
-        전체 집단에서는 일정한 패턴이
-        자연스럽게 나타나는 현상이다.
-        """)
-
-# =====================================================
-# 제목
-# =====================================================
-
-st.title("🔐 인간은 어떻게 비밀번호를 만드는가?")
+st.title("🔐 인간은 정말 랜덤한 비밀번호를 만들 수 있을까?")
 
 st.markdown("""
-### 통계역학적 관점에서 분석한 인간의 비밀번호 생성 과정
+### 통계역학적 관점에서 바라본 비밀번호 생성 과정
 """)
 
 st.info("""
-🎯 탐구 질문
+이 페이지의 목표는
 
-인간은 스스로 랜덤한 비밀번호를 만든다고 생각한다.
+'인간은 랜덤한 비밀번호를 만든다'
 
-하지만 정말 그럴까?
-
-통계역학에서는 수많은 입자의 작은 움직임이 모여
-거대한 질서를 만든다고 설명한다.
-
-비밀번호 선택 역시 비슷한 방식으로
-설명할 수 있을까?
+라는 가설을 검증하는 것이다.
 """)
 
-# =====================================================
+# ==================================================
 # SECTION 1
-# =====================================================
+# ==================================================
 
 st.divider()
 
-st.header("1️⃣ 당신은 랜덤한 비밀번호를 만들 수 있을까?")
+st.header("1️⃣ 내 비밀번호는 얼마나 랜덤할까?")
 
-user_pw = st.text_input(
-    "무작위라고 생각하는 비밀번호를 입력해보세요"
+pw = st.text_input(
+    "랜덤하다고 생각하는 비밀번호를 입력해보세요"
 )
 
-if user_pw:
+if pw:
 
-    length = len(user_pw)
+    length = len(pw)
 
-    digit_count = sum(c.isdigit() for c in user_pw)
-    upper_count = sum(c.isupper() for c in user_pw)
-    lower_count = sum(c.islower() for c in user_pw)
+    unique_ratio = len(set(pw)) / max(length,1)
 
-    repeated = len(set(user_pw)) < len(user_pw)
-
-    sequential = bool(
-        re.search(
-            r"123|234|345|456|567|678|789|abc|qwe",
-            user_pw.lower()
-        )
+    entropy_est = unique_ratio * np.log2(
+        max(length,1)
     )
 
-    st.subheader("분석 결과")
+    bias = 0
 
-    c1, c2, c3, c4 = st.columns(4)
+    if re.search(r"123|234|345|456|789", pw):
+        bias += 0.3
 
-    c1.metric("길이", length)
-    c2.metric("숫자 수", digit_count)
-    c3.metric("대문자 수", upper_count)
-    c4.metric("소문자 수", lower_count)
+    if re.search(r"abc|qwe|asd", pw.lower()):
+        bias += 0.3
 
-    if repeated:
-        st.warning("반복 문자가 발견되었습니다.")
+    if len(set(pw)) < len(pw):
+        bias += 0.2
 
-    if sequential:
-        st.warning("연속 패턴이 발견되었습니다.")
+    if re.search(r"19\d\d|20\d\d", pw):
+        bias += 0.2
 
-    if not repeated and not sequential:
-        st.success("뚜렷한 인간 편향이 발견되지 않았습니다.")
+    bias = min(bias,1)
 
-st.markdown("""
-대부분의 사람들은
+    col1,col2,col3 = st.columns(3)
 
-'랜덤하게 만들었다'
-
-고 생각하지만,
-
-실제로는 반복 문자나 연속 숫자를 사용하는 경우가 많다.
-""")
-
-# =====================================================
-# SECTION 2
-# =====================================================
-
-st.divider()
-
-st.header("2️⃣ 인간은 어떤 특징을 가진 비밀번호를 선호할까?")
-
-threshold = st.slider(
-    "Human Bias Score 기준",
-    0.0,
-    1.0,
-    0.5
-)
-
-filtered = df[
-    df["human_bias_score"] >= threshold
-]
-
-st.metric(
-    "조건을 만족하는 비밀번호 수",
-    f"{len(filtered):,}"
-)
-
-fig = px.histogram(
-    filtered,
-    x="human_bias_score",
-    nbins=40,
-    title="Human Bias Score 분포"
-)
-
-st.plotly_chart(fig, use_container_width=True)
-
-st.success("""
-분석 결과
-
-높은 Human Bias Score를 가진 비밀번호가
-상당수 존재한다.
-
-이는 사람들이 무작위보다
-
-기억하기 쉬운 패턴,
-
-익숙한 패턴을 선호한다는 것을 의미한다.
-""")
-
-# =====================================================
-# SECTION 3
-# =====================================================
-
-st.divider()
-
-st.header("3️⃣ 사람들은 입력하기 쉬운 비밀번호를 선택할까?")
-
-prediction = st.radio(
-    "당신의 예상은?",
-    [
-        "멀리 이동한다",
-        "가까운 키를 선호한다"
-    ]
-)
-
-show = st.button("결과 확인")
-
-if show:
-
-    fig = px.histogram(
-        df,
-        x="keyboard_path_length",
-        nbins=40,
-        title="Keyboard Path Length 분포"
+    col1.metric(
+        "예상 편향 점수",
+        round(bias,3)
     )
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True
+    col2.metric(
+        "예상 엔트로피",
+        round(entropy_est,3)
     )
 
-    st.success("""
-대부분의 비밀번호는
-
-짧은 키보드 이동거리를 가진다.
-
-즉,
-
-사람들은 입력하기 쉬운 패턴을
-선호한다.
-""")
-
-# =====================================================
-# SECTION 4
-# =====================================================
-
-st.divider()
-
-st.header("4️⃣ 미시상태가 모이면 거시상태가 될까?")
-
-sample = df[
-    [
-        "microstate",
-        "macrostate"
-    ]
-].sample(10)
-
-st.dataframe(sample)
-
-if st.button("공통점 찾아보기"):
-
-    st.info("""
-서로 다른 비밀번호라도
-
-동일한 구조를 가지는 경우가 많다.
-
-이것이 Macrostate이다.
-""")
-
-    top_macro = (
-        df["macrostate"]
-        .value_counts()
-        .head(15)
-        .reset_index()
+    col3.metric(
+        "데이터 평균 엔트로피",
+        AVG_ENTROPY
     )
 
-    top_macro.columns = [
-        "Macrostate",
-        "Count"
-    ]
+    gauge = pd.DataFrame({
+        "Category":["당신","평균"],
+        "Bias":[bias,AVG_BIAS]
+    })
 
     fig = px.bar(
-        top_macro,
-        x="Macrostate",
-        y="Count",
-        title="가장 많이 등장하는 Macrostate"
+        gauge,
+        x="Category",
+        y="Bias",
+        title="편향 비교"
     )
 
     st.plotly_chart(
@@ -290,58 +154,58 @@ if st.button("공통점 찾아보기"):
         use_container_width=True
     )
 
-    st.success("""
-분석 결과
+    if bias > AVG_BIAS:
 
-수많은 비밀번호가 존재하지만
+        st.warning("""
+당신의 비밀번호는
 
-실제로는 일부 구조에 집중된다.
+평균적인 사용자보다
 
-개인의 선택은 다양하지만
-
-전체적으로는 일정한 구조가 형성된다.
+더 예측 가능할 수 있습니다.
 """)
 
-# =====================================================
-# SECTION 5
-# =====================================================
+    else:
+
+        st.success("""
+평균 사용자보다
+
+상대적으로 랜덤합니다.
+""")
+
+# ==================================================
+# SECTION 2
+# ==================================================
 
 st.divider()
 
-st.header("5️⃣ 자기조직화 시뮬레이션")
+st.header("2️⃣ 작은 편향은 어떤 결과를 만들까?")
 
-bias = st.slider(
-    "인간 편향 강도",
+bias_strength = st.slider(
+    "인간의 편향 강도",
     0,
     100,
-    50
+    20
 )
 
-x = np.arange(10)
+states = np.arange(20)
 
-distribution = np.exp(
-    bias / 20 *
-    np.linspace(
-        0,
-        1,
-        10
-    )
+weights = np.exp(
+    bias_strength/25 *
+    np.linspace(0,1,20)
 )
 
-distribution /= distribution.sum()
+weights /= weights.sum()
 
-sim_df = pd.DataFrame(
-    {
-        "State": x,
-        "Probability": distribution
-    }
-)
+sim_df = pd.DataFrame({
+    "State":states,
+    "Probability":weights
+})
 
 fig = px.bar(
     sim_df,
     x="State",
     y="Probability",
-    title="편향에 따른 상태 집중"
+    title="상태 분포"
 )
 
 st.plotly_chart(
@@ -349,89 +213,163 @@ st.plotly_chart(
     use_container_width=True
 )
 
-st.success("""
-편향이 증가할수록
+st.markdown(f"""
+편향 강도 : **{bias_strength}%**
 
-선택은 일부 상태에 집중된다.
+편향이 커질수록
 
-이는 통계역학에서 말하는
-
-자기조직화(Self-Organization)
-
-현상과 유사하다.
+특정 상태가 선택될 확률이 높아진다.
 """)
 
-# =====================================================
-# SECTION 6
-# =====================================================
+# ==================================================
+# SECTION 3
+# ==================================================
 
 st.divider()
 
-st.header("6️⃣ 지금까지 발견한 사실")
+st.header("3️⃣ 사람이 많아지면 무슨 일이 일어날까?")
 
-c1, c2, c3, c4 = st.columns(4)
-
-c1.metric(
-    "발견 ①",
-    "반복 패턴"
+population = st.slider(
+    "비밀번호를 만드는 사람 수",
+    1,
+    100000,
+    1000,
+    step=1000
 )
 
-c2.metric(
-    "발견 ②",
-    "입력 편의성"
+samples = np.random.choice(
+    states,
+    size=population,
+    p=weights
 )
 
-c3.metric(
-    "발견 ③",
-    "문자 편향"
+freq = pd.Series(samples).value_counts()
+
+concentration = freq.max()/population
+
+fig = px.histogram(
+    x=samples,
+    nbins=20,
+    title="집단 선택 결과"
 )
 
-c4.metric(
-    "발견 ④",
-    "거시상태 형성"
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
+
+st.metric(
+    "집중도",
+    round(concentration,3)
 )
 
 st.info("""
-이 네 가지 현상은 모두
+한 사람은 랜덤하게 선택할 수 있다.
 
-인간이 완전한 무작위 선택을 하지 않는다는 증거이다.
+하지만 사람이 많아질수록
+
+특정 상태에 선택이 집중된다.
 """)
 
-# =====================================================
-# 결론
-# =====================================================
+# ==================================================
+# SECTION 4
+# ==================================================
 
 st.divider()
 
-st.header("📌 최종 결론")
+st.header("4️⃣ 질서변수(Order Parameter)를 관찰해보자")
 
-st.success("""
-개인의 비밀번호 선택은 무작위처럼 보인다.
+order = concentration
 
-그러나
+fig = px.bar(
+    x=["현재 시뮬레이션","실제 데이터"],
+    y=[order,AVG_ORDER],
+    labels={"x":"비교","y":"Order Parameter"}
+)
 
-반복 패턴,
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
 
-입력 편의성,
+if order > 0.5:
 
-기억하기 쉬운 구조와 같은
+    st.success("""
+질서 상태가 형성되었다.
 
-작은 행동 편향들이 모이면
+집단은 더 이상 랜덤하지 않다.
+""")
 
-전체 집단에서는 일정한 구조가 형성된다.
+else:
+
+    st.warning("""
+아직 무질서 상태에 가깝다.
+""")
+
+# ==================================================
+# SECTION 5
+# ==================================================
+
+st.divider()
+
+st.header("5️⃣ 우리는 무엇을 발견했을까?")
+
+c1,c2,c3,c4 = st.columns(4)
+
+c1.metric(
+    "발견①",
+    "편향 존재"
+)
+
+c2.metric(
+    "발견②",
+    "상태 집중"
+)
+
+c3.metric(
+    "발견③",
+    "질서 형성"
+)
+
+c4.metric(
+    "발견④",
+    "자기조직화"
+)
+
+# ==================================================
+# CONCLUSION
+# ==================================================
+
+st.divider()
+
+st.header("📌 결론")
+
+st.success(f"""
+실제 데이터의 평균 질서변수는
+
+{AVG_ORDER}
+
+이다.
+
+이는 사람들의 비밀번호가
+
+완전히 랜덤하게 생성되지 않는다는 의미이다.
+
+개인의 작은 편향은
+
+집단 수준에서 증폭되고,
+
+결국 특정 구조가 반복적으로 선택된다.
 
 즉,
 
 비밀번호 생성은
 
-수많은 미시적 행동이 모여
+통계역학에서 말하는
 
-거시적 질서를 만들어내는
+자기조직화(Self-Organization)의 한 예로 볼 수 있다.
 
-통계역학적 현상으로 해석할 수 있다.
+➡ 다음 페이지에서는
 
-➡️ 다음 페이지에서는
-
-이러한 행동 편향이 실제 데이터에서
-어떤 규칙성으로 나타나는지 검증한다.
+실제 데이터에서 어떤 규칙성이 발견되는지 검증한다.
 """)
