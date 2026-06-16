@@ -8,185 +8,281 @@ st.set_page_config(
 )
 
 # ======================
-# CSS (Apple Liquid Glass)
+# 다크/라이트 모드 상태
 # ======================
-st.markdown("""
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = True
+
+dark = st.session_state.dark_mode
+
+# ======================
+# 다크/라이트 CSS 변수 정의
+# ======================
+if dark:
+    bg_main   = "radial-gradient(circle at 15% 20%, rgba(120,160,255,0.28) 0%, transparent 45%), radial-gradient(circle at 85% 15%, rgba(255,120,200,0.22) 0%, transparent 45%), radial-gradient(circle at 50% 90%, rgba(120,255,210,0.18) 0%, transparent 50%), linear-gradient(160deg,#0b0c10 0%,#14151c 50%,#0b0c10 100%)"
+    glass_bg  = "linear-gradient(135deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.04) 100%)"
+    glass_hov = "linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 100%)"
+    border    = "rgba(255,255,255,0.16)"
+    border_hov= "rgba(255,255,255,0.35)"
+    text_main = "rgba(255,255,255,0.95)"
+    text_sub  = "rgba(255,255,255,0.55)"
+    text_hint = "rgba(255,255,255,0.35)"
+    badge_bg  = "rgba(255,255,255,0.08)"
+    shadow    = "rgba(0,0,0,0.28)"
+    shadow_hov= "rgba(0,0,0,0.40)"
+    sidebar_bg= "rgba(255,255,255,0.03)"
+    sidebar_br= "rgba(255,255,255,0.08)"
+    title_grad= "linear-gradient(135deg,#ffffff 0%,#b9c2ff 50%,#ffd1ef 100%)"
+    num_grad  = "linear-gradient(135deg,#ffffff 0%,#aab6ff 100%)"
+    q_grad    = "linear-gradient(135deg,#ffffff 0%,#ffd1ef 100%)"
+    arrow_col = "rgba(255,255,255,0.45)"
+    arrow_hov = "#ffffff"
+    link_bg   = "rgba(255,255,255,0.07)"
+    link_hov  = "rgba(255,255,255,0.16)"
+    link_text = "rgba(255,255,255,0.85)"
+else:
+    bg_main   = "radial-gradient(circle at 15% 20%, rgba(100,140,255,0.12) 0%, transparent 45%), radial-gradient(circle at 85% 15%, rgba(255,100,180,0.10) 0%, transparent 45%), radial-gradient(circle at 50% 90%, rgba(80,220,180,0.10) 0%, transparent 50%), linear-gradient(160deg,#f0f2ff 0%,#faf5ff 50%,#f0f8ff 100%)"
+    glass_bg  = "linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.45) 100%)"
+    glass_hov = "linear-gradient(135deg, rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.65) 100%)"
+    border    = "rgba(120,120,180,0.18)"
+    border_hov= "rgba(100,100,220,0.38)"
+    text_main = "rgba(30,30,60,0.95)"
+    text_sub  = "rgba(60,60,100,0.65)"
+    text_hint = "rgba(100,100,160,0.55)"
+    badge_bg  = "rgba(100,100,220,0.09)"
+    shadow    = "rgba(100,100,200,0.10)"
+    shadow_hov= "rgba(100,100,200,0.22)"
+    sidebar_bg= "rgba(255,255,255,0.55)"
+    sidebar_br= "rgba(180,180,220,0.20)"
+    title_grad= "linear-gradient(135deg,#3b3bb0 0%,#7c3aed 50%,#db2777 100%)"
+    num_grad  = "linear-gradient(135deg,#3b3bb0 0%,#6366f1 100%)"
+    q_grad    = "linear-gradient(135deg,#3b3bb0 0%,#db2777 100%)"
+    arrow_col = "rgba(80,80,180,0.55)"
+    arrow_hov = "#3b3bb0"
+    link_bg   = "rgba(100,100,220,0.08)"
+    link_hov  = "rgba(100,100,220,0.18)"
+    link_text = "rgba(40,40,120,0.90)"
+
+st.markdown(f"""
 <style>
 
-/* 전체 배경 - 은은한 그라데이션 + 블러 처리된 컬러 오브 */
-.stApp{
-    background:
-        radial-gradient(circle at 15% 20%, rgba(120,160,255,0.35) 0%, transparent 45%),
-        radial-gradient(circle at 85% 15%, rgba(255,120,200,0.30) 0%, transparent 45%),
-        radial-gradient(circle at 50% 90%, rgba(120,255,210,0.25) 0%, transparent 50%),
-        linear-gradient(160deg, #0b0c10 0%, #14151c 50%, #0b0c10 100%);
+.stApp {{
+    background: {bg_main};
     background-attachment: fixed;
-}
+}}
 
-.block-container{
-    padding-top:2rem;
-    max-width:1200px;
-}
+.block-container {{
+    padding-top: 1.5rem;
+    max-width: 1200px;
+}}
 
-/* 사이드바 */
-section[data-testid="stSidebar"]{
-    background: rgba(255,255,255,0.03);
-    border-right: 1px solid rgba(255,255,255,0.08);
-}
+section[data-testid="stSidebar"] {{
+    background: {sidebar_bg};
+    border-right: 1px solid {sidebar_br};
+    backdrop-filter: blur(20px);
+}}
 
 /* ---------- Hero ---------- */
-.hero{
-    text-align:center;
-    padding:5rem 1rem 2rem 1rem;
-}
+.hero {{
+    text-align: center;
+    padding: 4rem 1rem 1.8rem 1rem;
+}}
 
-.hero-badge{
-    display:inline-block;
-    padding:6px 18px;
-    border-radius:999px;
-    background:rgba(255,255,255,0.06);
-    border:1px solid rgba(255,255,255,0.14);
+.hero-badge {{
+    display: inline-block;
+    padding: 6px 20px;
+    border-radius: 999px;
+    background: {badge_bg};
+    border: 1px solid {border};
     backdrop-filter: blur(20px);
-    color:rgba(255,255,255,0.75);
-    font-size:0.85rem;
-    letter-spacing:0.05em;
-    margin-bottom:1.2rem;
-}
+    color: {text_sub};
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+}}
 
-.hero-title{
-    font-size:3.4rem;
-    font-weight:800;
-    line-height:1.25;
-    letter-spacing:-0.02em;
-    background:linear-gradient(135deg, #ffffff 0%, #b9c2ff 50%, #ffd1ef 100%);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-}
+.hero-title {{
+    font-size: 3.4rem;
+    font-weight: 800;
+    line-height: 1.22;
+    letter-spacing: -0.025em;
+    background: {title_grad};
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}}
 
-.hero-subtitle{
-    margin-top:18px;
-    color:rgba(255,255,255,0.55);
-    font-size:1.15rem;
-    font-weight:500;
-    letter-spacing:0.04em;
-}
+.hero-subtitle {{
+    margin-top: 18px;
+    color: {text_sub};
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}}
 
-/* ---------- Liquid Glass 공통 카드 ---------- */
-.glass{
-    position:relative;
-    background:linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%);
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border:1px solid rgba(255,255,255,0.14);
-    border-radius:28px;
-    padding:32px;
-    margin-bottom:22px;
+/* ---------- Liquid Glass 카드 ---------- */
+.glass {{
+    position: relative;
+    background: {glass_bg};
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid {border};
+    border-radius: 28px;
+    padding: 30px;
+    margin-bottom: 20px;
     box-shadow:
-        0 8px 32px rgba(0,0,0,0.25),
-        inset 0 1px 0 rgba(255,255,255,0.18);
-    transition: all 0.35s ease;
-}
+        0 6px 28px {shadow},
+        inset 0 1px 0 rgba(255,255,255,0.55);
+    transition: all 0.32s cubic-bezier(.4,0,.2,1);
+}}
 
-.glass:hover{
-    background:linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.05) 100%);
-    border-color:rgba(255,255,255,0.28);
-    transform: translateY(-4px);
+.glass:hover {{
+    background: {glass_hov};
+    border-color: {border_hov};
+    transform: translateY(-5px);
     box-shadow:
-        0 16px 40px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.25);
-}
+        0 18px 44px {shadow_hov},
+        inset 0 1px 0 rgba(255,255,255,0.70);
+}}
 
-/* 통계 숫자 카드 */
-.stat-card{
-    text-align:center;
-    padding:28px 10px;
-}
+/* 통계 카드 */
+.stat-card {{
+    text-align: center;
+    padding: 26px 10px;
+}}
 
-.big-number{
-    font-size:2.6rem;
-    font-weight:800;
-    background:linear-gradient(135deg, #ffffff 0%, #aab6ff 100%);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-}
+.big-number {{
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: {num_grad};
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}}
 
-.big-label{
-    margin-top:6px;
-    color:rgba(255,255,255,0.55);
-    font-size:0.95rem;
-    letter-spacing:0.03em;
-}
+.big-label {{
+    margin-top: 6px;
+    color: {text_sub};
+    font-size: 0.92rem;
+    letter-spacing: 0.02em;
+}}
 
 /* 섹션 타이틀 */
-.section-title{
-    font-size:1.6rem;
-    font-weight:700;
-    color:rgba(255,255,255,0.92);
-    margin: 2.4rem 0 1.2rem 0;
-    letter-spacing:-0.01em;
-}
+.section-title {{
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: {text_main};
+    margin: 2.2rem 0 1rem 0;
+    letter-spacing: -0.01em;
+}}
 
-/* 카드 내부 텍스트 */
-.card-icon{
-    font-size:2rem;
-    margin-bottom:10px;
-}
+/* 카드 내부 */
+.card-icon {{
+    font-size: 2rem;
+    margin-bottom: 10px;
+}}
 
-.card-title{
-    font-size:1.25rem;
-    font-weight:700;
-    color:rgba(255,255,255,0.95);
-}
+.card-title {{
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: {text_main};
+}}
 
-.card-desc{
-    color:rgba(255,255,255,0.55);
-    margin-top:10px;
-    font-size:0.95rem;
-    line-height:1.6;
-    min-height:78px;
-}
+.card-desc {{
+    color: {text_sub};
+    margin-top: 10px;
+    font-size: 0.93rem;
+    line-height: 1.65;
+    min-height: 74px;
+}}
 
-/* 핵심 질문 박스 */
-.question{
-    text-align:center;
-    padding:60px 30px;
-    margin-top:30px;
-    font-size:1.05rem;
-    line-height:2;
-    color:rgba(255,255,255,0.85);
-}
+/* 카드 링크 버튼 */
+.card-link {{
+    display: inline-block;
+    margin-top: 16px;
+    padding: 9px 20px;
+    border-radius: 999px;
+    background: {link_bg};
+    border: 1px solid {border};
+    color: {link_text} !important;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.22s ease;
+    cursor: pointer;
+}}
 
-.question h2{
-    font-size:1.8rem;
-    margin-bottom:1.2rem;
-    background:linear-gradient(135deg, #ffffff 0%, #ffd1ef 100%);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-}
+.card-link:hover {{
+    background: {link_hov};
+    border-color: {border_hov};
+    transform: translateX(3px);
+}}
+
+.card-link .arrow {{
+    margin-left: 5px;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}}
+
+.card-link:hover .arrow {{
+    transform: translateX(4px);
+}}
+
+/* 클릭 가능한 전체 카드 래퍼 */
+a.card-wrap {{
+    text-decoration: none !important;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+}}
+
+/* 핵심 질문 */
+.question {{
+    text-align: center;
+    padding: 55px 30px;
+    margin-top: 28px;
+    font-size: 1.05rem;
+    line-height: 2;
+    color: {text_sub};
+}}
+
+.question h2 {{
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    background: {q_grad};
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+}}
+
+/* Streamlit 기본 버튼 숨기기 (mode toggle 제외) */
+div[data-testid="stVerticalBlock"] div[data-testid="stHorizontalBlock"] {{
+    gap: 0;
+}}
 
 </style>
 """, unsafe_allow_html=True)
 
 # ======================
+# 다크/라이트 모드 토글 (우상단)
+# ======================
+top_spacer, top_btn = st.columns([10, 1])
+with top_btn:
+    label = "☀️" if dark else "🌙"
+    if st.button(label, key="mode_toggle", help="다크/라이트 모드 전환"):
+        st.session_state.dark_mode = not st.session_state.dark_mode
+        st.rerun()
+
+# ======================
 # Hero
 # ======================
-st.markdown("""
+st.markdown(f"""
 <div class="hero">
-
 <div class="hero-badge">STATISTICAL PHYSICS × INFORMATION SECURITY</div>
-
-<div class="hero-title">
-🔐 인간이 만든 비밀번호는<br>
-정말 랜덤할까?
-</div>
-
-<div class="hero-subtitle">
-실제 유출 비밀번호 데이터로 살펴보는 인간 선택의 패턴
-</div>
-
+<div class="hero-title">🔐 인간이 만든 비밀번호는<br>정말 랜덤할까?</div>
+<div class="hero-subtitle">실제 유출 비밀번호 데이터로 살펴보는 인간 선택의 패턴</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -196,7 +292,7 @@ st.markdown("""
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("""
+    st.markdown(f"""
     <div class="glass stat-card">
     <div class="big-number">1400만+</div>
     <div class="big-label">분석 대상 비밀번호</div>
@@ -204,7 +300,7 @@ with col1:
     """, unsafe_allow_html=True)
 
 with col2:
-    st.markdown("""
+    st.markdown(f"""
     <div class="glass stat-card">
     <div class="big-number">100+</div>
     <div class="big-label">발견된 패턴</div>
@@ -212,7 +308,7 @@ with col2:
     """, unsafe_allow_html=True)
 
 with col3:
-    st.markdown("""
+    st.markdown(f"""
     <div class="glass stat-card">
     <div class="big-number">2</div>
     <div class="big-label">융합 학문 분야</div>
@@ -222,10 +318,10 @@ with col3:
 # ======================
 # 프로젝트 소개
 # ======================
-st.markdown('<div class="section-title">프로젝트 소개</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="section-title">프로젝트 소개</div>', unsafe_allow_html=True)
 
-st.markdown("""
-<div class="glass">
+st.markdown(f"""
+<div class="glass" style="color:{text_sub}; line-height:1.9;">
 우리는 비밀번호를 만들 때 스스로는 무작위라고 생각한다.<br><br>
 하지만 실제 비밀번호 데이터는 인간이 반복적으로 특정 규칙을 사용한다는 사실을 보여준다.<br><br>
 본 프로젝트는 실제 유출 비밀번호 데이터를 활용하여 인간의 선택 행동을 통계물리학적으로 분석하고,
@@ -234,9 +330,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ======================
-# 연구 진행 과정 (페이지 1~4 소개 및 이동)
+# 연구 진행 과정
 # ======================
-st.markdown('<div class="section-title">연구 진행 과정</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="section-title">연구 진행 과정</div>', unsafe_allow_html=True)
 
 pages_info = [
     {
@@ -244,28 +340,32 @@ pages_info = [
         "title": "① 생성 과정 분석",
         "desc": "비밀번호 길이, 문자 구성, 엔트로피를 분석하여 인간이 비밀번호를 만드는 과정을 탐구한다.",
         "path": "pages/00_비밀번호 생성의 원리.py",
-        "label": "생성 과정 분석으로 이동"
+        "label": "생성 과정 분석으로 이동",
+        "url": "/비밀번호_생성의_원리"
     },
     {
         "icon": "🔁",
         "title": "② 규칙성 검증",
         "desc": "연속 숫자, 키보드 배열, 날짜 패턴 등을 통해 인간 선택의 보편성을 검증한다.",
         "path": "pages/01_비밀번호의 규칙성.py",
-        "label": "규칙성 검증으로 이동"
+        "label": "규칙성 검증으로 이동",
+        "url": "/비밀번호의_규칙성"
     },
     {
         "icon": "🛡️",
         "title": "③ 정보보안 분석",
         "desc": "발견된 규칙성이 실제 공격 환경에서 어떤 위험을 만드는지 분석한다.",
         "path": "pages/02_비번 보안.py",
-        "label": "정보보안 분석으로 이동"
+        "label": "정보보안 분석으로 이동",
+        "url": "/비번_보안"
     },
     {
         "icon": "🔑",
         "title": "④ 비밀번호 안전도 측정",
         "desc": "사용자가 입력한 비밀번호의 희귀도와 안전도를 평가한다.",
         "path": "pages/03_비번 평가.py",
-        "label": "비밀번호 안전도 측정으로 이동"
+        "label": "비밀번호 안전도 측정으로 이동",
+        "url": "/비번_평가"
     },
 ]
 
@@ -276,26 +376,23 @@ cols = row1 + row2
 for col, info in zip(cols, pages_info):
     with col:
         st.markdown(f"""
+        <a class="card-wrap" href="{info['url']}" target="_self">
         <div class="glass">
         <div class="card-icon">{info['icon']}</div>
         <div class="card-title">{info['title']}</div>
         <div class="card-desc">{info['desc']}</div>
-        <div style="margin-top:14px; color:rgba(255,255,255,0.4); font-size:0.85rem;">
-        사이드바에서 이동 →
+        <span class="card-link">{info['label']}<span class="arrow">→</span></span>
         </div>
-        </div>
+        </a>
         """, unsafe_allow_html=True)
 
 # ======================
 # 핵심 연구 질문
 # ======================
-st.markdown("""
+st.markdown(f"""
 <div class="glass question">
-
 <h2>🧠 핵심 연구 질문</h2>
-
 인간이 만든 비밀번호는 정말 랜덤할까?<br>
 그리고 그 비무작위성은 정보보안에 어떤 영향을 미칠까?
-
 </div>
 """, unsafe_allow_html=True)
