@@ -4,7 +4,7 @@ st.set_page_config(
     page_title="인간이 만든 비밀번호는 정말 랜덤할까?",
     page_icon="🔐",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 # ======================
@@ -28,9 +28,10 @@ st.markdown("""
     max-width:1200px;
 }
 
-/* 사이드바 숨김 느낌 정리 */
+/* 사이드바 */
 section[data-testid="stSidebar"]{
-    display:none;
+    background: rgba(255,255,255,0.03);
+    border-right: 1px solid rgba(255,255,255,0.08);
 }
 
 /* ---------- Hero ---------- */
@@ -279,9 +280,11 @@ for col, info in zip(cols, pages_info):
         <div class="card-icon">{info['icon']}</div>
         <div class="card-title">{info['title']}</div>
         <div class="card-desc">{info['desc']}</div>
+        <div style="margin-top:14px; color:rgba(255,255,255,0.4); font-size:0.85rem;">
+        사이드바에서 이동 →
+        </div>
         </div>
         """, unsafe_allow_html=True)
-        st.page_link(info["path"], label=info["label"], use_container_width=True)
 
 # ======================
 # 핵심 연구 질문
