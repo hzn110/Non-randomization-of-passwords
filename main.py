@@ -19,27 +19,27 @@ dark = st.session_state.dark_mode
 # 다크/라이트 CSS 변수 정의
 # ======================
 if dark:
-    bg_main   = "radial-gradient(circle at 20% 25%, rgba(160,130,255,0.60) 0%, transparent 42%), radial-gradient(circle at 80% 12%, rgba(230,130,255,0.50) 0%, transparent 42%), radial-gradient(circle at 50% 88%, rgba(100,170,255,0.45) 0%, transparent 48%), linear-gradient(160deg,#1a1640 0%,#221450 45%,#1a1245 100%)"
-    glass_bg  = "linear-gradient(135deg, rgba(180,160,255,0.10) 0%, rgba(120,100,255,0.04) 100%)"
-    glass_hov = "linear-gradient(135deg, rgba(200,180,255,0.20) 0%, rgba(140,120,255,0.10) 100%)"
-    border    = "rgba(180,160,255,0.20)"
-    border_hov= "rgba(200,180,255,0.45)"
+    bg_main   = "radial-gradient(circle at 20% 25%, rgba(160,130,255,0.22) 0%, transparent 50%), radial-gradient(circle at 80% 12%, rgba(220,130,255,0.18) 0%, transparent 50%), radial-gradient(circle at 50% 88%, rgba(100,170,255,0.16) 0%, transparent 55%), linear-gradient(160deg, rgba(18,14,48,0.92) 0%, rgba(22,14,52,0.88) 50%, rgba(16,12,42,0.92) 100%)"
+    glass_bg  = "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(200,180,255,0.03) 100%)"
+    glass_hov = "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(200,180,255,0.07) 100%)"
+    border    = "rgba(200,180,255,0.15)"
+    border_hov= "rgba(220,200,255,0.32)"
     text_main = "rgba(255,255,255,0.95)"
-    text_sub  = "rgba(220,210,255,0.65)"
-    text_hint = "rgba(180,170,255,0.40)"
-    badge_bg  = "rgba(180,160,255,0.10)"
-    shadow    = "rgba(60,30,120,0.30)"
-    shadow_hov= "rgba(80,40,160,0.45)"
-    sidebar_bg= "rgba(30,20,70,0.75)"
-    sidebar_br= "rgba(180,160,255,0.12)"
+    text_sub  = "rgba(220,210,255,0.60)"
+    text_hint = "rgba(180,170,255,0.35)"
+    badge_bg  = "rgba(200,180,255,0.07)"
+    shadow    = "rgba(60,30,120,0.18)"
+    shadow_hov= "rgba(80,40,160,0.28)"
+    sidebar_bg= "rgba(18,12,45,0.50)"
+    sidebar_br= "rgba(200,180,255,0.10)"
     title_grad= "linear-gradient(135deg,#e8e0ff 0%,#c4b5ff 50%,#f9c6ff 100%)"
     num_grad  = "linear-gradient(135deg,#ffffff 0%,#c4b5ff 100%)"
     q_grad    = "linear-gradient(135deg,#e8e0ff 0%,#f9c6ff 100%)"
-    arrow_col = "rgba(200,180,255,0.55)"
+    arrow_col = "rgba(200,180,255,0.50)"
     arrow_hov = "#e8e0ff"
-    link_bg   = "rgba(180,160,255,0.10)"
-    link_hov  = "rgba(200,180,255,0.22)"
-    link_text = "rgba(220,210,255,0.90)"
+    link_bg   = "rgba(200,180,255,0.07)"
+    link_hov  = "rgba(200,180,255,0.16)"
+    link_text = "rgba(220,210,255,0.88)"
 else:
     bg_main   = "radial-gradient(circle at 15% 20%, rgba(100,140,255,0.12) 0%, transparent 45%), radial-gradient(circle at 85% 15%, rgba(255,100,180,0.10) 0%, transparent 45%), radial-gradient(circle at 50% 90%, rgba(80,220,180,0.10) 0%, transparent 50%), linear-gradient(160deg,#f0f2ff 0%,#faf5ff 50%,#f0f8ff 100%)"
     glass_bg  = "linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.45) 100%)"
@@ -148,15 +148,16 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {{
 .glass {{
     position: relative;
     background: {glass_bg};
-    backdrop-filter: blur(32px) saturate(200%);
-    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    backdrop-filter: blur(40px) saturate(180%) brightness(1.08);
+    -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.08);
     border: 1px solid {border};
     border-radius: 28px;
     padding: 30px;
     margin-bottom: 20px;
     box-shadow:
-        0 6px 28px {shadow},
-        inset 0 1px 0 rgba(255,255,255,0.55);
+        0 4px 24px {shadow},
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        inset 0 -1px 0 rgba(255,255,255,0.04);
     transition: all 0.32s cubic-bezier(.4,0,.2,1);
 }}
 
@@ -165,8 +166,9 @@ section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {{
     border-color: {border_hov};
     transform: translateY(-5px);
     box-shadow:
-        0 18px 44px {shadow_hov},
-        inset 0 1px 0 rgba(255,255,255,0.70);
+        0 14px 36px {shadow_hov},
+        inset 0 1px 0 rgba(255,255,255,0.28),
+        inset 0 -1px 0 rgba(255,255,255,0.08);
 }}
 
 /* 통계 카드 */
