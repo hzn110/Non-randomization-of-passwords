@@ -7,19 +7,11 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
-# =====================================================
-# 페이지 설정
-# =====================================================
-
 st.set_page_config(
-    page_title="내 비밀번호는 얼마나 흔할까?",
+    page_title="비밀번호 안전도 측정",
     page_icon="🔑",
     layout="wide"
 )
-
-# =====================================================
-# 데이터 불러오기 (실패해도 분석은 동작하도록 처리)
-# =====================================================
 
 @st.cache_data
 def load_dataset():
@@ -27,16 +19,13 @@ def load_dataset():
     path = os.path.join(base_dir, "rockyou_rigorous_behavioral_physics_v2.csv")
     return pd.read_csv(path)
 
-
 @st.cache_data
 def load_common_passwords():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     path = os.path.join(base_dir, "common_passwords.csv")
     df = pd.read_csv(path)
-    # 첫 번째 컬럼을 비밀번호 컬럼으로 사용
     col = df.columns[0]
     return df[col].astype(str).tolist()
-
 
 try:
     df = load_dataset()
@@ -54,11 +43,6 @@ except Exception:
     common_set = set()
     COMMON_OK = False
 
-
-# =====================================================
-# 분석 함수 (1~2페이지와 동일한 통계물리 지표 재사용)
-# =====================================================
-
 KEYBOARD_ROWS = [
     "1234567890",
     "qwertyuiop",
@@ -66,14 +50,12 @@ KEYBOARD_ROWS = [
     "zxcvbnm",
 ]
 
-
 def _key_position(ch):
     ch = ch.lower()
     for r, row in enumerate(KEYBOARD_ROWS):
         if ch in row:
             return (r, row.index(ch))
     return None
-
 
 def keyboard_path_length(password):
     total = 0.0
@@ -86,14 +68,12 @@ def keyboard_path_length(password):
             prev = pos
     return total
 
-
 def shannon_entropy(password):
     if not password:
         return 0.0
     counts = Counter(password)
     n = len(password)
     return -sum((c / n) * math.log2(c / n) for c in counts.values())
-
 
 def get_macrostate(password):
     macro = ""
@@ -107,7 +87,6 @@ def get_macrostate(password):
         else:
             macro += "s"
     return macro
-
 
 def order_parameter(password):
     if not password:
@@ -125,8 +104,7 @@ def order_parameter(password):
     total = len(password)
     fractions = [c / total for c in counts.values()]
     ideal = 0.25
-    return sum(abs(f - ideal) for f in fractions) / 2  # 0(균형) ~ 1(편중)
-
+    return sum(abs(f - ideal) for f in fractions) / 2
 
 SEQUENCES = [
     "0123456789", "9876543210",
@@ -137,41 +115,27 @@ KEYBOARD_PATTERNS = ["qwer", "asdf", "zxcv", "qwerty", "asdfgh", "1qaz", "zaq1"]
 COMMON_WORDS = ["password", "love", "admin", "welcome", "iloveyou",
                 "monkey", "dragon", "letmein", "qwerty", "123456"]
 
-
 def detect_patterns(password):
     lower = password.lower()
     found = []
-
-    # 연속 숫자/알파벳 (4자 이상)
     for seq in SEQUENCES:
         for i in range(len(seq) - 3):
             chunk = seq[i:i + 4]
             if chunk in lower:
                 found.append("연속된 문자/숫자 (예: 1234, abcd)")
                 break
-
-    # 반복 문자 (3회 이상)
     if re.search(r'(.)\1{2,}', password):
         found.append("같은 문자 반복 (예: aaa, 111)")
-
-    # 연도 패턴
     if re.search(r'(19|20)\d{2}', password):
         found.append("연도 형태 포함 (예: 1999, 2024)")
-
-    # 키보드 패턴
     if any(p in lower for p in KEYBOARD_PATTERNS):
         found.append("키보드 인접 자판 패턴 (예: qwer, asdf)")
-
-    # 흔한 단어
     if any(w in lower for w in COMMON_WORDS):
         found.append("흔히 쓰이는 단어 포함 (예: password, love)")
-
     return found
-
 
 def human_bias_score(password):
     return len(detect_patterns(password))
-
 
 def percentile_rank(series, value):
     series = series.dropna()
@@ -179,26 +143,20 @@ def percentile_rank(series, value):
         return None
     return float((series < value).mean() * 100)
 
-
 def estimate_crack_time_seconds(password):
     has_lower = any(c.islower() for c in password)
     has_upper = any(c.isupper() for c in password)
     has_digit = any(c.isdigit() for c in password)
     has_symbol = any(not c.isalnum() for c in password)
-
     charset = 0
     charset += 26 if has_lower else 0
     charset += 26 if has_upper else 0
     charset += 10 if has_digit else 0
     charset += 32 if has_symbol else 0
     charset = max(charset, 1)
-
     combinations = charset ** max(len(password), 1)
-
-    # 오프라인 공격 가정: 초당 100억(1e10) 회 시도
     guesses_per_second = 1e10
-    return combinations / guesses_per_second / 2  # 평균적으로 절반만 탐색
-
+    return combinations / guesses_per_second / 2
 
 def format_seconds(seconds):
     if seconds < 1:
@@ -218,12 +176,11 @@ def format_seconds(seconds):
             return f"약 {value:,.1f}{name}"
     return "1초 미만"
 
-
 # =====================================================
 # 화면 구성
 # =====================================================
 
-st.title("🔑 내 비밀번호는 얼마나 흔할까?")
+st.title("🔑 비밀번호 안전도 측정")
 st.markdown("### 입력한 비밀번호의 희귀도(Rarity)와 보안성(Security)을 분석해보자")
 
 st.info("""
@@ -238,10 +195,6 @@ password = st.text_input("분석할 비밀번호를 입력해보세요", type="p
 
 if not password:
     st.stop()
-
-# -----------------------------------------------------
-# ① 기본 구조 분석
-# -----------------------------------------------------
 
 st.divider()
 st.header("1️⃣ 기본 구조 분석")
@@ -280,10 +233,6 @@ with st.expander("💡 구조 읽는 법"):
     실제 유출 데이터에서 매우 많이 발견된다.
     """)
 
-# -----------------------------------------------------
-# ② 희귀도 분석
-# -----------------------------------------------------
-
 st.divider()
 st.header("2️⃣ 희귀도 분석 (Rarity)")
 
@@ -291,7 +240,7 @@ is_common = password.lower() in {p.lower() for p in common_list} if COMMON_OK el
 
 if COMMON_OK:
     if is_common:
-        st.error(f"🚨 이 비밀번호는 실제 유출 데이터에서 자주 등장하는 **'흔한 비밀번호 목록'에 포함**되어 있습니다.")
+        st.error("🚨 이 비밀번호는 실제 유출 데이터에서 자주 등장하는 **'흔한 비밀번호 목록'에 포함**되어 있습니다.")
     else:
         st.success("✅ 입력한 비밀번호는 흔한 비밀번호 목록(common_passwords.csv)에서 발견되지 않았습니다.")
 else:
@@ -305,10 +254,7 @@ if DATA_OK:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric(
-            "같은 구조(macrostate)를 가진 비밀번호 비율",
-            f"{macro_pct:.4f}%"
-        )
+        st.metric("같은 구조(macrostate)를 가진 비밀번호 비율", f"{macro_pct:.4f}%")
 
     with col2:
         if macro_pct > 0:
@@ -338,11 +284,7 @@ if DATA_OK:
         (값이 높을수록 더 무작위적인 비밀번호)
         """)
 else:
-    st.warning("⚠️ 비교용 데이터셋(rockyou_rigorous_behavioral_physics_v2.csv)을 불러오지 못해 일부 비교 분석을 표시할 수 없습니다.")
-
-# -----------------------------------------------------
-# ③ 보안성 분석
-# -----------------------------------------------------
+    st.warning("⚠️ 비교용 데이터셋을 불러오지 못해 일부 비교 분석을 표시할 수 없습니다.")
 
 st.divider()
 st.header("3️⃣ 보안성 분석 (Security)")
@@ -359,14 +301,11 @@ with col1:
             st.write(f"- ⚠️ {p}")
     else:
         st.write("- ✅ 뚜렷한 인간 행동 패턴이 발견되지 않았습니다.")
-
     st.metric("Human Bias Score", bias_score)
 
 with col2:
     st.subheader("⏱️ 이론적 전수조사 시간")
-
     crack_seconds = estimate_crack_time_seconds(password)
-
     if is_common:
         st.metric("예상 크랙 시간", "1초 미만")
         st.caption("이미 알려진 비밀번호 목록에 있어, 이론적 전수조사 시간과 무관하게 즉시 노출될 수 있습니다.")
@@ -389,19 +328,12 @@ with st.expander("💡 왜 '희귀도'와 '보안성'을 따로 볼까?"):
     둘을 함께 봐야 한다.
     """)
 
-# -----------------------------------------------------
-# ④ 종합 점수
-# -----------------------------------------------------
-
 st.divider()
 st.header("4️⃣ 종합 점수")
-
 
 def clamp(v, lo=0, hi=100):
     return max(lo, min(hi, v))
 
-
-# 희귀도 점수: 100 = 매우 희귀, 0 = 매우 흔함
 if is_common:
     rarity_score = 0
 elif DATA_OK:
@@ -409,11 +341,9 @@ elif DATA_OK:
 else:
     rarity_score = clamp(shannon_entropy(password) / 4 * 100)
 
-# 보안 점수: 길이, 엔트로피, 패턴 감점 종합
 length_score = clamp(len(password) / 16 * 100)
 entropy_score = clamp(shannon_entropy(password) / 4 * 100)
 pattern_penalty = bias_score * 15
-
 security_score = clamp((length_score * 0.4 + entropy_score * 0.6) - pattern_penalty)
 
 if is_common:
@@ -456,10 +386,6 @@ with col2:
     ))
     fig.update_layout(height=280, margin=dict(t=60, b=10, l=20, r=20))
     st.plotly_chart(fig, use_container_width=True)
-
-# -----------------------------------------------------
-# ⑤ 개선 제안
-# -----------------------------------------------------
 
 st.divider()
 st.header("5️⃣ 개선 제안")
