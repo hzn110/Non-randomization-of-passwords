@@ -82,6 +82,29 @@ section[data-testid="stSidebar"] {{
     backdrop-filter: blur(20px);
 }}
 
+/* 사이드바 텍스트 색상 (라이트모드에서 안 보이는 문제 해결) */
+section[data-testid="stSidebar"] * {{
+    color: {text_main} !important;
+}}
+
+section[data-testid="stSidebar"] a,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] p {{
+    color: {text_main} !important;
+    opacity: 1 !important;
+}}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {{
+    color: {text_main} !important;
+    background: transparent;
+    border-radius: 10px;
+    transition: background 0.2s;
+}}
+
+section[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {{
+    background: {badge_bg} !important;
+}}
+
 /* ---------- Hero ---------- */
 .hero {{
     text-align: center;
@@ -266,14 +289,14 @@ div[data-testid="stVerticalBlock"] div[data-testid="stHorizontalBlock"] {{
 """, unsafe_allow_html=True)
 
 # ======================
-# 다크/라이트 모드 토글 (우상단)
+# 다크/라이트 모드 토글 (사이드바 상단)
 # ======================
-top_spacer, top_btn = st.columns([10, 1])
-with top_btn:
-    label = "☀️" if dark else "🌙"
-    if st.button(label, key="mode_toggle", help="다크/라이트 모드 전환"):
+with st.sidebar:
+    label = "☀️ 라이트 모드" if dark else "🌙 다크 모드"
+    if st.button(label, key="mode_toggle", use_container_width=True):
         st.session_state.dark_mode = not st.session_state.dark_mode
         st.rerun()
+    st.divider()
 
 # ======================
 # Hero
