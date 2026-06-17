@@ -271,68 +271,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ======================
-# SECTION 1 — 내 비밀번호는 얼마나 랜덤할까?
-# ======================
-st.markdown(f'<div class="section-title">1️⃣ 내 비밀번호는 얼마나 랜덤할까?</div>', unsafe_allow_html=True)
-
-st.markdown(f"""
-<div class="glass">
-    <div class="body-text">
-    랜덤하다고 생각하는 비밀번호를 입력해보자.<br>
-    통계역학적 지표로 얼마나 예측 가능한지 분석해준다.
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-pw = st.text_input("랜덤하다고 생각하는 비밀번호를 입력해보세요", placeholder="예: Tr0ub4dor&3")
-
-if pw:
-    length = len(pw)
-    unique_ratio = len(set(pw)) / max(length, 1)
-    entropy_est = unique_ratio * np.log2(max(length, 1))
-
-    bias = 0
-    if re.search(r"123|234|345|456|789", pw): bias += 0.3
-    if re.search(r"abc|qwe|asd", pw.lower()): bias += 0.3
-    if len(set(pw)) < len(pw): bias += 0.2
-    if re.search(r"19\d\d|20\d\d", pw): bias += 0.2
-    bias = min(bias, 1)
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown(f"""
-        <div class="glass stat-row">
-            <div class="big-number">{round(bias, 3)}</div>
-            <div class="big-label">예상 편향 점수</div>
-        </div>""", unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"""
-        <div class="glass stat-row">
-            <div class="big-number">{round(entropy_est, 3)}</div>
-            <div class="big-label">예상 엔트로피</div>
-        </div>""", unsafe_allow_html=True)
-    with col3:
-        st.markdown(f"""
-        <div class="glass stat-row">
-            <div class="big-number">{AVG_ENTROPY}</div>
-            <div class="big-label">데이터 평균 엔트로피</div>
-        </div>""", unsafe_allow_html=True)
-
-    gauge_df = pd.DataFrame({"카테고리": ["내 비밀번호", "평균"], "편향 점수": [bias, AVG_BIAS]})
-    fig = px.bar(gauge_df, x="카테고리", y="편향 점수", color="카테고리",
-                 color_discrete_sequence=[bar_color, bar_color2], title="편향 점수 비교")
-    fig = apply_chart_theme(fig)
-    fig.update_layout(showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
-
-    if bias > AVG_BIAS:
-        st.markdown(f"""<div class="glass" style="border-color:rgba(255,120,120,0.30);">
-            <div class="body-text">⚠️ 입력한 비밀번호는 평균적인 사용자보다 <strong>더 예측 가능</strong>할 수 있습니다.<br>
-            반복 패턴, 연속 숫자, 연도 등의 요소가 편향을 높입니다.</div></div>""", unsafe_allow_html=True)
-    else:
-        st.markdown(f"""<div class="glass" style="border-color:rgba(120,255,180,0.30);">
-            <div class="body-text">✅ 평균 사용자보다 상대적으로 <strong>랜덤</strong>합니다.</div></div>""", unsafe_allow_html=True)
 
 # ======================
 # SECTION 2 — 작은 편향은 어떤 결과를 만들까?
