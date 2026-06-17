@@ -273,7 +273,7 @@ st.markdown(f"""
 
 
 # ======================
-# SECTION 2 — 작은 편향은 어떤 결과를 만들까?
+# SECTION 1 — 작은 편향은 어떤 결과를 만들까?
 # ======================
 st.markdown(f'<div class="section-title">2️⃣ 작은 편향은 어떤 결과를 만들까?</div>', unsafe_allow_html=True)
 
@@ -308,7 +308,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ======================
-# SECTION 3 — 사람이 많아지면?
+# SECTION 2 — 사람이 많아지면?
 # ======================
 st.markdown(f'<div class="section-title">3️⃣ 사람이 많아지면 무슨 일이 일어날까?</div>', unsafe_allow_html=True)
 
@@ -349,7 +349,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ======================
-# SECTION 4 — 질서변수 관찰
+# SECTION 3 — 질서변수 관찰
 # ======================
 st.markdown(f'<div class="section-title">4️⃣ 질서변수(Order Parameter)를 관찰해보자</div>', unsafe_allow_html=True)
 
@@ -378,7 +378,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ======================
-# SECTION 5 — 발견 요약 (실제 데이터)
+# SECTION 4 — 발견 요약 (실제 데이터)
 # ======================
 st.markdown(f'<div class="section-title">5️⃣ 실제 데이터에서 무엇을 발견했을까?</div>', unsafe_allow_html=True)
 
