@@ -234,6 +234,7 @@ with st.sidebar:
 
 # ======================
 # 데이터 로드
+# [수정 3] 오류 내용을 보여주도록 변경 → 디버깅이 쉬워짐
 # ======================
 @st.cache_data
 def load_data():
@@ -244,9 +245,11 @@ def load_data():
 try:
     df = load_data()
     DATA_OK = True
-except Exception:
+    DATA_ERR = None  # [수정 3] 오류 메시지 저장용 변수
+except Exception as e:
     df = None
     DATA_OK = False
+    DATA_ERR = str(e)  # [수정 3] 실제 예외 내용을 보관
 
 def apply_chart_theme(fig):
     fig.update_layout(
@@ -363,7 +366,14 @@ if DATA_OK:
         </div>
         """, unsafe_allow_html=True)
 else:
-    st.markdown(f'<div class="glass"><div class="body-text">⚠️ 데이터셋을 불러오지 못했습니다.</div></div>', unsafe_allow_html=True)
+    # [수정 3] 단순 경고 → 실제 오류 내용까지 표시
+    st.markdown(f"""
+    <div class="glass">
+        <div class="body-text">⚠️ 데이터셋을 불러오지 못했습니다.<br>
+        <code>{DATA_ERR}</code>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ======================
 # SECTION 3 — 인기 순위 + Zipf 법칙
@@ -443,6 +453,7 @@ if st.button("📊 Bigram 결과 보기", key="bigram_btn"):
     </div>
     """, unsafe_allow_html=True)
 
+    # [수정 4] bigram_sequence 컬럼 유무에 따라 안내 메시지 분기
     if DATA_OK and "bigram_sequence" in df.columns:
         counter = Counter()
         for item in df["bigram_sequence"].dropna():
@@ -453,9 +464,18 @@ if st.button("📊 Bigram 결과 보기", key="bigram_btn"):
                      title="가장 자주 등장하는 문자 조합 Top 15")
         fig = apply_chart_theme(fig)
         st.plotly_chart(fig, use_container_width=True)
+    else:
+        # [수정 4] 그래프를 못 그리는 이유를 사용자에게 알려줌
+        reason = "데이터셋을 불러오지 못했습니다." if not DATA_OK else "데이터에 'bigram_sequence' 컬럼이 없습니다."
+        st.markdown(f"""
+        <div class="glass">
+            <div class="body-text">ℹ️ Bigram 분포 그래프를 표시할 수 없습니다. ({reason})</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 # ======================
 # SECTION 5 — 랜덤 세계 vs 실제
+# [수정 1] np.random.seed 고정 → 슬라이더 값이 같으면 결과도 동일하게 재현
 # ======================
 st.markdown(f'<div class="section-title">5️⃣ 완전히 랜덤한 세계와 비교해보자</div>', unsafe_allow_html=True)
 
@@ -463,7 +483,10 @@ randomness = st.slider("랜덤성 강도", 0, 100, 50, key="rand_slider")
 
 col1, col2 = st.columns(2)
 
-sim = np.random.normal(50, max(3, randomness / 5), 1000)
+# [수정 1] 슬라이더 값을 시드로 사용해 재현성 확보
+rng = np.random.default_rng(seed=randomness)
+sim = rng.normal(50, max(3, randomness / 5), 1000)
+
 fig1 = px.histogram(x=sim, nbins=30, color_discrete_sequence=[bar_color],
                     title=f"가상의 랜덤 세계 (랜덤성 {randomness}%)",
                     labels={"x": "값", "y": "빈도"})
@@ -493,11 +516,23 @@ st.markdown(f"""
 
 # ======================
 # SECTION 6 — 상태공간의 함정
+# [수정 2] 근거 없는 '* 15' 제거 → 실제 데이터 기반 고유 패턴 수 사용
 # ======================
 st.markdown(f'<div class="section-title">6️⃣ 상태공간의 함정</div>', unsafe_allow_html=True)
 
 possible = st.slider("이론적으로 가능한 비밀번호 수", 100, 1_000_000, 100_000, step=1000, key="state_slider")
-used = int(np.log10(possible) * 15)
+
+# [수정 2] 실제 데이터의 고유 거시상태(구조) 개수를 '집중 상태'의 근거로 사용
+# 데이터가 없으면 안전하게 보수적인 추정치(가능 수의 일정 비율)를 사용
+if DATA_OK and "macrostate" in df.columns:
+    used = int(df["macrostate"].nunique())          # 실제로 사람들이 사용한 고유 구조 수
+    used_basis = "실제 데이터의 고유 구조(거시상태) 개수"
+else:
+    used = max(1, int(possible * 0.001))            # 데이터 없을 때 보수적 추정 (0.1%)
+    used_basis = "데이터 부재로 인한 추정치(가능 수의 0.1%)"
+
+# possible보다 used가 클 수 없도록 상한 처리
+used = min(used, possible)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -510,7 +545,7 @@ with col2:
     st.markdown(f"""
     <div class="glass" style="text-align:center; padding:24px;">
         <div style="font-size:2rem; font-weight:800; background:{num_grad}; -webkit-background-clip:text; background-clip:text; color:transparent;">{used:,}</div>
-        <div style="color:{text_sub}; font-size:0.9rem; margin-top:6px;">실제 집중 상태 (추정)</div>
+        <div style="color:{text_sub}; font-size:0.9rem; margin-top:6px;">실제 집중 상태</div>
     </div>""", unsafe_allow_html=True)
 
 ratio = used / possible * 100
@@ -518,7 +553,8 @@ st.markdown(f"""
 <div class="glass" style="border-color:{warn_border};">
     <div class="body-text">
     가능한 조합은 <strong>{possible:,}개</strong>이지만, 사람들은 전체의 약 <strong>{ratio:.2f}%</strong>에 해당하는 <strong>{used:,}개</strong> 패턴에만 집중한다.<br>
-    공격자 입장에서는 탐색 공간이 기하급수적으로 줄어드는 셈이다.
+    공격자 입장에서는 탐색 공간이 기하급수적으로 줄어드는 셈이다.<br>
+    <span style="color:{text_hint}; font-size:0.85rem;">※ 집중 상태 산출 근거: {used_basis}</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
