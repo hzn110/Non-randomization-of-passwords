@@ -137,19 +137,8 @@ streamlit run 홈.py
     ├── 02_비번 보안.py
     └── 03_비번 평가.py
 ```
-
----
-
-## 9. 이 분석의 한계 (정직하게 적기)
-
-- RockYou 데이터는 2009년 기준으로, 현재의 비밀번호 정책(특수문자 강제 등)을 반영하지 못함
-- 서비스 종류(금융, SNS 등)에 따른 비밀번호 패턴 차이를 구분하지 않음
-- 실질 엔트로피의 패턴 감점 기준(-10 bits/패턴)은 이 프로젝트에서 임의로 설정한 값임
-
-> 한계를 숨기지 않고 함께 적는 것이 **정직한 데이터 분석**입니다.
-
 ---
 
 🎓 데이터 1: [Kaggle — RockYou Password Dataset](https://www.kaggle.com/datasets/wjburns/common-password-list-rockyoutxt)  
 🎓 데이터 2: [Kaggle — 10,000 Most Common Passwords](https://www.kaggle.com/datasets/shivamb/10000-most-common-passwords)  
-🤝 함께 만든 도구: Claude
+🤝 함께 만든 도구: Claude,chatgpt
