@@ -239,7 +239,7 @@ with st.sidebar:
 @st.cache_data
 def load_data():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path = os.path.join(base_dir, "rockyou_rigorous_behavioral_physics_v2.csv")
+    path = os.path.join(base_dir, "rockyou_rigorous_behavioral_physics_v2 (1).csv")
     return pd.read_csv(path)
 
 try:
